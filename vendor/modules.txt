@@ -32,10 +32,23 @@ github.com/aws/aws-sdk-go/private/protocol/query/queryutil
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol
+# github.com/fatih/color v1.7.0
+github.com/fatih/color
 # github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8
 github.com/jmespath/go-jmespath
+# github.com/magefile/mage v1.8.0
+github.com/magefile/mage/sh
+github.com/magefile/mage/mg
+# github.com/mattn/go-colorable v0.0.9
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.4
+github.com/mattn/go-isatty
 # github.com/mitchellh/go-homedir v1.0.0
 github.com/mitchellh/go-homedir
+# github.com/pkg/errors v0.8.0
+github.com/pkg/errors
+# golang.org/x/sys v0.0.0-20181228144115-9a3f9b0469bb
+golang.org/x/sys/unix
 # gopkg.in/alecthomas/kingpin.v2 v2.2.6
 gopkg.in/alecthomas/kingpin.v2
 # gopkg.in/ini.v1 v1.40.0

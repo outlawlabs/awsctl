@@ -4,6 +4,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/pkg/errors"
 )
 
 // Profile represents a structure that includes authentication fields necessary
@@ -29,7 +30,7 @@ func Authenticate(duration int64, serialNumber, token string) (Profile, error) {
 
 	result, err := svc.GetSessionToken(input)
 	if err != nil {
-		return Profile{}, err
+		return Profile{}, errors.Wrap(err, "get session token failed")
 	}
 
 	return Profile{

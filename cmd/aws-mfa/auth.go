@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pkg/errors"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	ini "gopkg.in/ini.v1"
 
 	"github.com/outlawlabs/aws-mfa/src/aws"
+	"github.com/outlawlabs/aws-mfa/src/logger"
 )
 
 // authCommand represents all of the context for the "auth" command.
@@ -32,20 +34,20 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 
 	credentials, err := ini.Load(a.credentialsFile)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to read credentials file")
 	}
 
 	config, err := ini.Load(a.configFile)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to read config file")
 	}
 
 	if err := os.Setenv("AWS_SDK_LOAD_CONFIG", "true"); err != nil {
-		return err
+		return errors.Wrap(err, "failed to set AWS_SDK_LOAD_CONFIG value")
 	}
 
 	if err := os.Setenv("AWS_PROFILE", a.profile); err != nil {
-		return err
+		return errors.Wrap(err, "failed to set AWS_PROFILE value")
 	}
 
 	configProfile := fmt.Sprintf("profile %s", a.profile)
@@ -59,6 +61,7 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 	mfa := config.Section(configProfile).Key(keyMFASerial).String()
 	region := config.Section(configProfile).Key(keyRegion).String()
 
+	logger.Info("Attempting to authenticate with credentials for profile: %s.", a.profile)
 	prof, err := aws.Authenticate(a.duration, mfa, a.token)
 	if err != nil {
 		return err
@@ -67,7 +70,7 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 	mfaProfile := fmt.Sprintf("profile %s_mfa", a.profile)
 	config.Section(mfaProfile).Key(keyRegion).SetValue(region)
 	if err := config.SaveTo(a.configFile); err != nil {
-		return err
+		return errors.Wrap(err, "failed to save new config file")
 	}
 
 	mfaProfile = fmt.Sprintf("%s_mfa", a.profile)
@@ -75,7 +78,13 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 	credentials.Section(mfaProfile).Key(keySecretAccessKey).SetValue(prof.SecretAccessKey)
 	credentials.Section(mfaProfile).Key(keySessionToken).SetValue(prof.SessionToken)
 	credentials.Section(mfaProfile).Key(keyMFASerial).SetValue(prof.MFASerial)
-	return credentials.SaveTo(a.credentialsFile)
+	if err := credentials.SaveTo(a.credentialsFile); err != nil {
+		return errors.Wrap(err, "failed to save new credentials file")
+	}
+
+	logger.Success("Successfully created a MFA authenticated session for profile: %s.", a.profile)
+	logger.Always("Activate your MFA profile: export AWS_PROFILE=%s_mfa", a.profile)
+	return nil
 }
 
 // configureAuthCommand sets up the "auth" command for the main

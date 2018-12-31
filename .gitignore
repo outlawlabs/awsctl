@@ -13,3 +13,6 @@
 
 # Mac
 *.DS_Store
+
+# Temporary
+.goreleaser.yml
