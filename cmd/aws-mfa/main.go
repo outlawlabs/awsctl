@@ -19,6 +19,8 @@ const (
 	keySessionToken    = "aws_session_token"
 	keyMFASerial       = "mfa_serial"
 	keyRegion          = "region"
+
+	awsCLIHelp = "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
 )
 
 var (
@@ -33,13 +35,13 @@ func main() {
 	ini.PrettyFormat = false
 	ini.PrettyEqual = true
 
-	credentialsFile, err := homedir.Expand("~/.aws/credentials")
+	credentialsFile, err := homedir.Expand(credentialsFile)
 	if err != nil {
 		logger.Critical("Failed to expand ~/.aws/credentials file: %s.", err)
 		os.Exit(1)
 	}
 
-	configFile, err := homedir.Expand("~/.aws/config")
+	configFile, err := homedir.Expand(configFile)
 	if err != nil {
 		logger.Critical("Failed to expand ~/.aws/config file: %s.", err)
 		os.Exit(1)
@@ -48,6 +50,8 @@ func main() {
 	app := kingpin.New("aws-mfa", "CLI tool to help manage multiple AWS profiles with MFA requirements.").
 		Author("github.com/outlawlabs").
 		Version(version)
+
 	configureAuthCommand(app, configFile, credentialsFile)
+	configureListCommand(app, configFile, credentialsFile)
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }

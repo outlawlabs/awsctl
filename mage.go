@@ -22,6 +22,8 @@ import (
 // unix-like systems.
 var goexe = "go"
 
+var Default = Build
+
 func init() {
 	if exe := os.Getenv("GOEXE"); exe != "" {
 		goexe = exe

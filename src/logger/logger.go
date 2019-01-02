@@ -8,9 +8,8 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/olekukonko/tablewriter"
 )
-
-type Logger func(format string, a ...interface{})
 
 const (
 	AlwaysLabel   = "✈"
@@ -22,15 +21,28 @@ const (
 )
 
 var (
-	Level = 3
-	Color = true
+	Level      = 3
+	Color      = true
+	Timestamps = false
 )
 
+// Log will print a formatted generic statement to standard output.
 func Log(format string, a ...interface{}) {
 	a, w := extractLoggerArgs(format, a...)
-	fmt.Fprintf(w, format, a...)
+	fmt.Fprintf(w, label(format, ""), a...)
 }
 
+// Table will print headers and data in a pretty formatted ASCII table.
+func Table(headers []string, data [][]string) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader(headers)
+	for _, v := range data {
+		table.Append(v)
+	}
+	table.Render()
+}
+
+// Always will "always" print a formatted generic statement to standard output.
 func Always(format string, a ...interface{}) {
 	a, w := extractLoggerArgs(format, a...)
 	s := fmt.Sprintf(label(format, AlwaysLabel), a...)
@@ -43,6 +55,9 @@ func Always(format string, a ...interface{}) {
 	fmt.Fprintf(w, s)
 }
 
+// Critical will print a formatted generic statement to standard output if the
+// global level is set to 1 or higher. The print statement will have a color of
+// red if color is enabled.
 func Critical(format string, a ...interface{}) {
 	if Level >= 1 {
 		a, w := extractLoggerArgs(format, a...)
@@ -57,6 +72,9 @@ func Critical(format string, a ...interface{}) {
 	}
 }
 
+// Info will print a formatted generic statement to standard output if the
+// global level is set to 3 or higher. The print statement will have a color of
+// cyan if color is enabled.
 func Info(format string, a ...interface{}) {
 	if Level >= 3 {
 		a, w := extractLoggerArgs(format, a...)
@@ -71,6 +89,9 @@ func Info(format string, a ...interface{}) {
 	}
 }
 
+// Success will print a formatted generic statement to standard output if the
+// global level is set to 3 or higher. The print statement will have a color of
+// cyan if color is enabled.
 func Success(format string, a ...interface{}) {
 	if Level >= 3 {
 		a, w := extractLoggerArgs(format, a...)
@@ -85,6 +106,8 @@ func Success(format string, a ...interface{}) {
 	}
 }
 
+// Debug will print a formatted generic statement to standard output if the
+// global level is set to 4 or higher.
 func Debug(format string, a ...interface{}) {
 	if Level >= 4 {
 		a, w := extractLoggerArgs(format, a...)
@@ -94,6 +117,9 @@ func Debug(format string, a ...interface{}) {
 	}
 }
 
+// Warning will print a formatted generic statement to standard output if the
+// global level is set to 2 or higher. The print statement will have a color of
+// yellow if color is enabled.
 func Warning(format string, a ...interface{}) {
 	if Level >= 2 {
 		a, w := extractLoggerArgs(format, a...)
@@ -101,7 +127,7 @@ func Warning(format string, a ...interface{}) {
 
 		if Color {
 			w = color.Output
-			s = color.GreenString(s)
+			s = color.YellowString(s)
 		}
 
 		fmt.Fprintf(w, s)
@@ -123,10 +149,16 @@ func extractLoggerArgs(format string, a ...interface{}) ([]interface{}, io.Write
 }
 
 func label(format, label string) string {
-	t := time.Now()
-	rfct := t.Format(time.RFC3339)
 	if !strings.Contains(format, "\n") {
 		format = fmt.Sprintf("%s%s", format, "\n")
 	}
-	return fmt.Sprintf("%s [%s]  %s", rfct, label, format)
+	if label != "" {
+		format = fmt.Sprintf("[%s]  %s", label, format)
+	}
+	if Timestamps {
+		t := time.Now()
+		rfct := t.Format(time.RFC3339)
+		format = fmt.Sprintf("%s %s", rfct, format)
+	}
+	return format
 }

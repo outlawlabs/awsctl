@@ -43,8 +43,12 @@ github.com/magefile/mage/mg
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
+# github.com/mattn/go-runewidth v0.0.4
+github.com/mattn/go-runewidth
 # github.com/mitchellh/go-homedir v1.0.0
 github.com/mitchellh/go-homedir
+# github.com/olekukonko/tablewriter v0.0.1
+github.com/olekukonko/tablewriter
 # github.com/pkg/errors v0.8.0
 github.com/pkg/errors
 # golang.org/x/sys v0.0.0-20181228144115-9a3f9b0469bb

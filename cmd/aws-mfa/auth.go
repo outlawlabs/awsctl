@@ -96,6 +96,6 @@ func configureAuthCommand(app *kingpin.Application, configFile, credentialsFile 
 	}
 	auth := app.Command("auth", "MFA authentication.").Action(c.run)
 	auth.Flag("token", "One time MFA token.").Short('t').StringVar(&c.token)
-	auth.Flag("profile", "AWS specific profile").Short('p').StringVar(&c.profile)
-	auth.Flag("duration", "Active MFA auth duration").Short('d').Int64Var(&c.duration)
+	auth.Flag("profile", "AWS specific profile.").Short('p').StringVar(&c.profile)
+	auth.Flag("duration", "Active MFA auth duration.").Short('d').Int64Var(&c.duration)
 }
