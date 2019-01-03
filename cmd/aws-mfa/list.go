@@ -6,8 +6,8 @@ import (
 	"github.com/pkg/errors"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 
-	"github.com/outlawlabs/aws-mfa/src/aws"
-	"github.com/outlawlabs/aws-mfa/src/logger"
+	"github.com/outlawlabs/aws-mfa/pkg/aws"
+	"github.com/outlawlabs/aws-mfa/pkg/logger"
 )
 
 // listCommand represents all of the context for the "list" command.
