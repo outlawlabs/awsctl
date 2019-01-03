@@ -49,7 +49,7 @@ func Always(format string, a ...interface{}) {
 
 	if Color {
 		w = color.Output
-		s = color.GreenString(s)
+		s = color.BlueString(s)
 	}
 
 	fmt.Fprintf(w, s)
@@ -82,7 +82,7 @@ func Info(format string, a ...interface{}) {
 
 		if Color {
 			w = color.Output
-			s = color.CyanString(s)
+			s = color.MagentaString(s)
 		}
 
 		fmt.Fprintf(w, s)
@@ -99,7 +99,7 @@ func Success(format string, a ...interface{}) {
 
 		if Color {
 			w = color.Output
-			s = color.CyanString(s)
+			s = color.GreenString(s)
 		}
 
 		fmt.Fprintf(w, s)

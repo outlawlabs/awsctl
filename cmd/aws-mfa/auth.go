@@ -52,10 +52,10 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 
 	configProfile := fmt.Sprintf("profile %s", a.profile)
 	if !config.Section(configProfile).HasKey(keyMFASerial) {
-		return fmt.Errorf("mfa_serial needs to bet configured for the profile: %s\n", a.profile)
+		return fmt.Errorf("mfa_serial needs to bet configured for the profile: %s", a.profile)
 	}
 	if !config.Section(configProfile).HasKey(keyRegion) {
-		return fmt.Errorf("region needs to bet configured for the profile: %s\n", a.profile)
+		return fmt.Errorf("region needs to bet configured for the profile: %s", a.profile)
 	}
 
 	mfa := config.Section(configProfile).Key(keyMFASerial).String()
