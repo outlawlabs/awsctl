@@ -46,7 +46,7 @@ func Build() error {
 
 	// use -tags make so we can have different behavior for when we know we've
 	// built with mage.
-	return run(goexe, "install", "-tags", "make", "--ldflags="+ldf, "github.com/outlawlabs/aws-mfa/cmd/aws-mfa")
+	return run(goexe, "install", "-mod=vendor", "-tags", "make", "--ldflags="+ldf, "github.com/outlawlabs/aws-mfa/cmd/aws-mfa")
 }
 
 // Runs go mod tidy & vendor.

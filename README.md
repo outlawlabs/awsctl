@@ -1,9 +1,24 @@
 # aws-mfa
 
+[![Outlaw Labs](https://img.shields.io/badge/roped%20by-Outlaw%20Labs-%23ff9933.svg)](https://github.com/outlawlabs)
 [![Built with Go](https://img.shields.io/badge/built%20with-Go-blue.svg)](https://golang.org)
 [![Built with Mage](https://magefile.org/badge.svg)](https://magefile.org)
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+[![MIT License](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 
-**NOTE: This is currently under development -- not meant for meaningful usages just yet.**
+### CLI based tool to help manage AWS profiles for account enabled with MFA.
 
-CLI tool to help manage multiple AWS profiles with MFA requirements
+## Purpose
+
+One main problem that teams face when enforcing MFA device authentication while
+working with AWS CLI profiles is there are no official stream-lined tool, or
+tools, to manage your temporary credential sessions easily.
+
+Instead of piecing together some *bash*, or *shell*, script to manage and do the
+magic behind the scenes to authenticate with your credentials, then get the new
+temporary credentials and save them to your existing file, create a new
+config/credentials file, or however you might your flow look. This tool is
+designed to be a **single binary** that will enable you to **create**, **list**,
+**authenticate** and generally **manage** your AWS profiles.
+
+As a side note -- to understand the general flow of how to do this natively with
+the AWS CLI check out this AWS support [article](https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/).
