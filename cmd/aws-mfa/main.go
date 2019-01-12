@@ -47,11 +47,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	app := kingpin.New("aws-mfa", "CLI tool to help manage multiple AWS profiles with MFA requirements.").
+	app := kingpin.New("aws-mfa", "CLI tool to help manage multiple AWS profiles with MFA enabled.").
 		Author("github.com/outlawlabs").
 		Version(version)
 
+	// TODO: add timestamp checks for auth so no need for redundant session creation.
+	// TODO: add the "remove" command to remove the profile and mfa profile.
+
 	configureAuthCommand(app, configFile, credentialsFile)
 	configureListCommand(app, configFile, credentialsFile)
+	configureNewCommand(app, configFile, credentialsFile)
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }

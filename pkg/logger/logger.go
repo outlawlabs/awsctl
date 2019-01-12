@@ -18,6 +18,7 @@ const (
 	InfoLabel     = "ℹ"
 	SuccessLabel  = "✔"
 	WarningLabel  = "!"
+	AskLabel      = "?"
 )
 
 var (
@@ -40,6 +41,20 @@ func Table(headers []string, data [][]string) {
 		table.Append(v)
 	}
 	table.Render()
+}
+
+// Ask will always print a formatted generic statement to standard output
+// formatted to be a question.
+func Ask(format string, a ...interface{}) {
+	a, w := extractLoggerArgs(format, a...)
+	s := fmt.Sprintf(label(format, AskLabel), a...)
+
+	if Color {
+		w = color.Output
+		s = color.YellowString(s)
+	}
+
+	fmt.Fprintf(w, s)
 }
 
 // Always will "always" print a formatted generic statement to standard output.
