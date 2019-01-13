@@ -12,8 +12,10 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/magefile/mage/sh"
 )
@@ -60,26 +62,31 @@ func Vendor() error {
 	return sh.Run(goexe, "mod", "vendor")
 }
 
-// TODO: uncomment when ready for releasing with goreleaser.
 // Generates a new release. Expects the TAG environment variable to be set,
 // which will create a new tag with that name.
-// func Release() (err error) {
-// 	releaseTag := regexp.MustCompile(`^v1\.[0-9]+\.[0-9]+$`)
-// 	tag := os.Getenv("TAG")
-// 	if !releaseTag.MatchString(tag) {
-// 		return errors.New("TAG environment variable must be in semver v1.x.x format, but was " + tag)
-// 	}
-// 	if err := sh.RunV("git", "tag", "-a", tag, "-m", tag); err != nil {
-// 		return err
-// 	}
-// 	if err := sh.RunV("git", "push", "origin", tag); err != nil {
-// 		return err
-// 	}
-// 	defer func() {
-// 		if err != nil {
-// 			sh.RunV("git", "tag", "--delete", "$TAG")
-// 			sh.RunV("git", "push", "--delete", "origin", "$TAG")
-// 		}
-// 	}()
-// 	return sh.RunV("goreleaser")
-// }
+func Release() (err error) {
+	releaseTag := regexp.MustCompile(`^v0\.[0-9]+\.[0-9]+$`)
+	tag := os.Getenv("TAG")
+	if !releaseTag.MatchString(tag) {
+		return errors.New("TAG environment variable must be in semver v0.x.x format, but was " + tag)
+	}
+	if err := sh.RunV("git", "tag", "-a", tag, "-m", tag); err != nil {
+		return err
+	}
+	if err := sh.RunV("git", "push", "origin", tag); err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			sh.RunV("git", "tag", "--delete", "$TAG")
+			sh.RunV("git", "push", "--delete", "origin", "$TAG")
+		}
+	}()
+	return sh.RunV("goreleaser")
+}
+
+// Clean up the generated release artifacts.
+func Clean() error {
+	log.Println("cleaning up dist release directory")
+	return sh.RunV("rm", "-rf", "dist")
+}
