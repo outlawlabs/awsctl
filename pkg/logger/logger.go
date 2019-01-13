@@ -12,18 +12,28 @@ import (
 )
 
 const (
-	AlwaysLabel   = "✈"
+	// AlwaysLabel displays an airplane on "always" logs.
+	AlwaysLabel = "✈"
+	// CriticalLabel displays an X on "critical" logs.
 	CriticalLabel = "✖"
-	DebugLabel    = "▶"
-	InfoLabel     = "ℹ"
-	SuccessLabel  = "✔"
-	WarningLabel  = "!"
-	AskLabel      = "?"
+	// DebugLabel displays a play button on "debug" logs.
+	DebugLabel = "▶"
+	// InfoLabel displays an i icon on "info" logs.
+	InfoLabel = "ℹ"
+	// SuccessLabel displays a check mark on "success" logs.
+	SuccessLabel = "✔"
+	// WarningLabel displays an ! on "warning" logs.
+	WarningLabel = "!"
+	// AskLabel displays a ? on "ask" logs.
+	AskLabel = "?"
 )
 
 var (
-	Level      = 3
-	Color      = true
+	// Level defines the default log level.
+	Level = 3
+	// Color toggles output colorization.
+	Color = true
+	// Timestamps toggles timestamps on output logs.
 	Timestamps = false
 )
 

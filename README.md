@@ -1,8 +1,8 @@
 # aws-mfa
 
-[![Outlaw Labs](https://img.shields.io/badge/roped%20by-Outlaw%20Labs-%23ff9933.svg)](https://github.com/outlawlabs)
+[![Outlaw Labs](https://img.shields.io/badge/developed%20by-Outlaw%20Labs-%23ff9933.svg)](https://github.com/outlawlabs)
 [![Built with Go](https://img.shields.io/badge/built%20with-Go-blue.svg)](https://golang.org)
-[![Built with Mage](https://magefile.org/badge.svg)](https://magefile.org)
+[![Go Report Card](https://goreportcard.com/badge/github.com/outlawlabs/aws-mfa)](https://goreportcard.com/badge/github.com/outlawlabs/aws-mfa)
 [![MIT License](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 
 ### CLI based tool to help manage AWS profiles for account enabled with MFA.
