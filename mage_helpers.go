@@ -22,7 +22,7 @@ func flags() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf(`-X "github.com/outlawlabs/cmd/aws-mfa.timestamp=%s" -X "github.com/outlawlabs/cmd/aws-mfa.commitHash=%s" -X "github.com/outlawlabs/cmd/aws-mfa.version=%s"`, timestamp, hash, version), nil
+	return fmt.Sprintf(`-X "github.com/outlawlabs/cmd/awsctl.timestamp=%s" -X "github.com/outlawlabs/cmd/awsctl.commitHash=%s" -X "github.com/outlawlabs/cmd/awsctl.version=%s"`, timestamp, hash, version), nil
 }
 
 func gitTag() (string, error) {

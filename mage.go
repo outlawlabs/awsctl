@@ -7,7 +7,7 @@
 // cd mage
 // go run bootstrap.go
 //
-// To build aws-mfa, just run "mage build".
+// To build awsctl, just run "mage build".
 
 package main
 
@@ -34,7 +34,7 @@ func init() {
 	os.Setenv("GO111MODULE", "on")
 }
 
-// Runs go install for aws-mfa.
+// Runs go install for awsctl.
 func Build() error {
 
 	ldf, err := flags()
@@ -46,7 +46,7 @@ func Build() error {
 
 	// use -tags make so we can have different behavior for when we know we've
 	// built with mage.
-	return run(goexe, "install", "-mod=vendor", "-tags", "make", "--ldflags="+ldf, "github.com/outlawlabs/aws-mfa/cmd/aws-mfa")
+	return run(goexe, "install", "-mod=vendor", "-tags", "make", "--ldflags="+ldf, "github.com/outlawlabs/awsctl/cmd/awsctl")
 }
 
 // Runs go mod tidy & vendor.

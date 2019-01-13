@@ -9,8 +9,8 @@ import (
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	ini "gopkg.in/ini.v1"
 
-	"github.com/outlawlabs/aws-mfa/pkg/aws"
-	"github.com/outlawlabs/aws-mfa/pkg/logger"
+	"github.com/outlawlabs/awsctl/pkg/aws"
+	"github.com/outlawlabs/awsctl/pkg/logger"
 )
 
 // newCommand represents all of the context for the "new" command.

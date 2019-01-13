@@ -7,7 +7,7 @@ import (
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	ini "gopkg.in/ini.v1"
 
-	"github.com/outlawlabs/aws-mfa/pkg/logger"
+	"github.com/outlawlabs/awsctl/pkg/logger"
 )
 
 const (
@@ -47,7 +47,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	app := kingpin.New("aws-mfa", "CLI tool to help manage multiple AWS profiles with MFA enabled.").
+	app := kingpin.New("awsctl", "CLI tool to help manage multiple AWS profiles with MFA enabled.").
 		Author("github.com/outlawlabs").
 		Version(version)
 
