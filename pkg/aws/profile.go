@@ -2,6 +2,7 @@ package aws
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -171,6 +172,32 @@ func (p Profile) Save(config, credentials *ini.File, configFile, credentialsFile
 	credentialsSection.Key(keySecretAccessKey).SetValue(p.SecretAccessKey)
 	if err := credentials.SaveTo(credentialsFile); err != nil {
 		return errors.Wrap(err, "failed to save new credentials file")
+	}
+
+	return nil
+}
+
+// RemoveProfile will remove the profile section from each AWS config and
+// credentials file (if possible).
+func RemoveProfile(profile string, config, credentials *ini.File, configFile, credentialsFile string) error {
+
+	if _, err := config.GetSection(profile); err == nil {
+		config.DeleteSection(profile)
+		if err := config.SaveTo(configFile); err != nil {
+			return errors.Wrap(err, "failed to save new config file")
+		}
+	}
+
+	// Remove the "profile " prefix of the profile string if it exists.
+	// strings.TrimPrefix() will return the existing profile string if the
+	// prefix does not exist.
+	profile = strings.TrimPrefix(profile, "profile ")
+
+	if _, err := credentials.GetSection(profile); err == nil {
+		credentials.DeleteSection(profile)
+		if err := credentials.SaveTo(credentialsFile); err != nil {
+			return errors.Wrap(err, "failed to save new credentials file")
+		}
 	}
 
 	return nil

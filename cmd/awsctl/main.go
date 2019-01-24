@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"os"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -52,10 +55,34 @@ func main() {
 		Version(version)
 
 	// TODO: add timestamp checks for auth so no need for redundant session creation.
-	// TODO: add the "remove" command to remove the profile and mfa profile.
 
 	configureAuthCommand(app, configFile, credentialsFile)
 	configureListCommand(app, configFile, credentialsFile)
 	configureNewCommand(app, configFile, credentialsFile)
+	configureRemoveCommand(app, configFile, credentialsFile)
 	kingpin.MustParse(app.Parse(os.Args[1:]))
+}
+
+// askForConfirmation asks the user for confirmation. This will not return until
+// there is a valid response from the user.
+func askForConfirmation(s string) bool {
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		logger.Ask(fmt.Sprintf("%s [y/n]: ", s))
+
+		response, err := reader.ReadString('\n')
+		if err != nil {
+			logger.Critical(err.Error())
+			os.Exit(1)
+		}
+
+		response = strings.ToLower(strings.TrimSpace(response))
+
+		if response == "y" || response == "yes" {
+			return true
+		} else if response == "n" || response == "no" {
+			return false
+		}
+	}
 }

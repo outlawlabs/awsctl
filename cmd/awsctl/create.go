@@ -53,14 +53,14 @@ func (n *newCommand) run(c *kingpin.ParseContext) error {
 	sections := config.SectionStrings()
 	for i := 0; i < len(sections); i++ {
 		if sections[i] == configProfile {
-			errors.New("cannot create new profile, it already exists")
+			return errors.New("cannot create new profile, it already exists")
 		}
 	}
 	// Also check for the same section header within the credentials file.
 	sections = credentials.SectionStrings()
 	for i := 0; i < len(sections); i++ {
 		if sections[i] == configProfile {
-			errors.New("cannot create new profile, it already exists")
+			return errors.New("cannot create new profile, it already exists")
 		}
 	}
 
@@ -105,6 +105,6 @@ func configureNewCommand(app *kingpin.Application, configFile, credentialsFile s
 		configFile:      configFile,
 		credentialsFile: credentialsFile,
 	}
-	auth := app.Command("new", "Save a new AWS profile & credential pair.").Action(n.run)
-	auth.Arg("profile", "AWS profile to create.").Required().StringVar(&n.profile)
+	new := app.Command("new", "Save a new AWS profile & credential pair.").Action(n.run)
+	new.Arg("profile", "AWS profile to create.").Required().StringVar(&n.profile)
 }
