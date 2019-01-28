@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: outlawlabs/go:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - run:
+          name: Building binary
+          command: mage build
+  vet:
+    docker:
+      - image: outlawlabs/go:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - run:
+          name: Vet codebase
+          command: mage vet
+  test:
+    docker:
+      - image: outlawlabs/go:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - run:
+          name: Test codebase
+          command: mage test
+
+workflows:
+  version: 2
+  build_vet_and_test:
+    jobs:
+      - build
+      - vet
+      - test

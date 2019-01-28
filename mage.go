@@ -96,6 +96,16 @@ func Release() (err error) {
 	return sh.RunV("goreleaser")
 }
 
+// Run go test on code base.
+func Test() error {
+	return sh.RunV(goexe, "test", "./...")
+}
+
+// Run go vet on code base.
+func Vet() error {
+	return sh.RunV(goexe, "vet", "./...")
+}
+
 // Clean up the generated release artifacts.
 func Clean() error {
 	log.Println("cleaning up dist release directory")
