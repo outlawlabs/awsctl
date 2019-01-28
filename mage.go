@@ -1,6 +1,6 @@
 // +build mage
 
-// This is the "magefile" for aws-mfa.
+// This is the "magefile" for awsctl.
 //
 // To install mage, run:
 // git clone https://github.com/magefile/mage
@@ -13,6 +13,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -37,18 +38,28 @@ func init() {
 }
 
 // Runs go install for awsctl.
-func Build() error {
+func Build() (err error) {
 
-	ldf, err := flags()
-	if err != nil {
-		return err
+	ldfTemplate := "--ldflags=%s"
+
+	var ldf string
+	env := os.Getenv("ENV")
+	if env == "DRYRUN" {
+		ldf, err = flags()
+		if err != nil {
+			return err
+		}
 	}
-
-	log.Println("running go install")
 
 	// use -tags make so we can have different behavior for when we know we've
 	// built with mage.
-	return run(goexe, "install", "-mod=vendor", "-tags", "make", "--ldflags="+ldf, "github.com/outlawlabs/awsctl/cmd/awsctl")
+	if ldf != "" {
+		err = run(goexe, "install", "-mod=vendor", "-tags", "make", fmt.Sprintf(ldfTemplate, ldf), "github.com/outlawlabs/awsctl/cmd/awsctl")
+	} else {
+		err = run(goexe, "install", "-mod=vendor", "-tags", "make", "github.com/outlawlabs/awsctl/cmd/awsctl")
+	}
+
+	return
 }
 
 // Runs go mod tidy & vendor.

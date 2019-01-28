@@ -24,12 +24,17 @@ const (
 	keyRegion          = "region"
 
 	awsCLIHelp = "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
+
+	versionTemplate = `version=%s
+timestamp=%s
+commit=%s`
 )
 
+// Placeholders for binary variable tagging.
 var (
-	version    = "DEV"
-	timestamp  = ""
-	commitHash = ""
+	version    = "BREAKING=MINOR++"
+	timestamp  = "0 BBY"
+	commitHash = string("38762cf7­f55934b3­4d179ae6­a4c80cad­ccbb7f0a")
 )
 
 func main() {
@@ -52,7 +57,7 @@ func main() {
 
 	app := kingpin.New("awsctl", "CLI tool to help manage multiple AWS profiles with MFA enabled.").
 		Author("github.com/outlawlabs").
-		Version(version)
+		Version(fmt.Sprintf(versionTemplate, version, timestamp, commitHash))
 
 	// TODO: add timestamp checks for auth so no need for redundant session creation.
 
