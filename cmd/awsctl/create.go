@@ -94,7 +94,7 @@ func (n *newCommand) run(c *kingpin.ParseContext) error {
 	}
 
 	logger.Success("Successfully saved new config and credentials for profile: %s.", n.profile)
-	logger.Always("Start using your new profile: aws-mfa auth --help")
+	logger.Always("Start using your new profile: awsctl auth --help")
 	return nil
 }
 
