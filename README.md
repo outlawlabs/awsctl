@@ -23,3 +23,53 @@ designed to be a **single binary** that will enable you to **create**, **list**,
 
 As a side note -- to understand the general flow of how to do this natively with
 the AWS CLI check out this AWS support [article](https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/).
+
+## Install
+
+To install `awsctl` checkout the [releases](https://github.com/outlawlabs/awsctl/releases)
+page to find the latest download for your operating system.
+
+## Usage
+
+To get started with `awsctl` you will need to ensure you have an AWS IAM account
+already setup with an MFA device. For more information about checking your MFA
+status checkout the AWS [docs](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_checking-status.html).
+
+### New Profile
+
+To create a new MFA profile with `awsctl` you simply grab your access key
+credentials from your account, as well as your _Assigned MFA device_.
+
+You will need to use these when you generate a new AWS profile with `awsctl`.
+
+Example interactive creation process --
+
+```sh
+$ awsctl new example
+[?]  Enter the AWS region you want to save:
+us-east-1
+[?]  Enter your MFA serial number for your IAM user:
+arn:aws:iam::123456789012:mfa/cowboy
+[?]  Enter your generated access key ID:
+********************
+[?]  Enter your generated secret access key:
+****************************************
+
+[ℹ]  Working on your new AWS profile: example
+[✔]  Successfully saved new config and credentials for profile: example.
+[✈]  Start using your new profile: awsctl auth --help
+```
+
+### Authenticate
+
+When you need to authenticate and create a new temporary session for our AWS CLI
+interactions. We leverage the streamlined functionality in `awsctl new` command.
+
+Example authentication process --
+
+```sh
+$ awsctl auth --profile example --duration 129000 --token 639959
+[ℹ]  Attempting to authenticate with credentials for profile: example.
+[✔]  Successfully created a MFA authenticated session for profile: example.
+[✈]  Activate your MFA profile: export AWS_PROFILE=example_mfa
+```
