@@ -1,9 +1,11 @@
 project_name: awsctl
+
 release:
   github:
     owner: outlawlabs
     name: awsctl
   draft: true
+
 build:
   binary: awsctl
   main: ./cmd/awsctl
@@ -16,31 +18,21 @@ build:
     - windows
   goarch:
     - amd64
-    - 386
-    - arm
-    - arm64
-  ignore:
-    - goos: darwin
-      goarch: 386
   env:
     - CGO_ENABLED=0
+
 archive:
-  name_template: '{{.Binary}}_{{.Version}}_{{.Os}}-{{.Arch}}'
-  replacements:
-    amd64: 64bit
-    386: 32bit
-    arm: ARM
-    arm64: ARM64
-    darwin: macOS
-    linux: Linux
-    windows: Windows
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
-  files:
-    - LICENSE
+  format: binary
+
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
+
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
