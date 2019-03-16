@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	credentialsFile = "~/.aws/credentials"
-	configFile      = "~/.aws/config"
+	defaultAWSDirectory = "~/.aws"
+	credentialsFile     = "~/.aws/credentials"
+	configFile          = "~/.aws/config"
 
 	keyAccessKeyID     = "aws_access_key_id"
 	keySecretAccessKey = "aws_secret_access_key"
@@ -43,6 +44,12 @@ func main() {
 	ini.PrettyFormat = false
 	ini.PrettyEqual = true
 
+	awsDirectory, err := homedir.Expand(defaultAWSDirectory)
+	if err != nil {
+		logger.Critical("Failed to expand %s: %s.", defaultAWSDirectory, err)
+		os.Exit(1)
+	}
+
 	credentialsFile, err := homedir.Expand(credentialsFile)
 	if err != nil {
 		logger.Critical("Failed to expand ~/.aws/credentials file: %s.", err)
@@ -53,6 +60,27 @@ func main() {
 	if err != nil {
 		logger.Critical("Failed to expand ~/.aws/config file: %s.", err)
 		os.Exit(1)
+	}
+
+	if _, err := os.Stat(credentialsFile); os.IsNotExist(err) {
+		// Ensure the default ~/.aws directory exists.
+		os.MkdirAll(awsDirectory, os.ModePerm)
+
+		file, err := os.Create(credentialsFile)
+		if err != nil {
+			logger.Critical("Failed to create file: %s. Error: %s.", credentialsFile, err)
+			os.Exit(1)
+		}
+		file.Close()
+	}
+
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		file, err := os.Create(configFile)
+		if err != nil {
+			logger.Critical("Failed to create file: %s. Error: %s.", configFile, err)
+			os.Exit(1)
+		}
+		file.Close()
 	}
 
 	app := kingpin.New("awsctl", "CLI tool to help manage multiple AWS profiles with MFA enabled.").

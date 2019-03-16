@@ -68,8 +68,25 @@ interactions. We leverage the streamlined functionality in `awsctl new` command.
 Example authentication process --
 
 ```sh
-$ awsctl auth --profile example --duration 129000 --token 639959
-[ℹ]  Attempting to authenticate with credentials for profile: example.
-[✔]  Successfully created a MFA authenticated session for profile: example.
-[✈]  Activate your MFA profile: export AWS_PROFILE=example_mfa
+$ awsctl auth --profile cowboy --duration 129000 --token 639959
+[ℹ]  Attempting to authenticate with credentials for profile: cowboy.
+[✔]  Successfully created a MFA authenticated session for profile: cowboy.
+[✈]  Activate your MFA profile: export AWS_PROFILE=cowboy_mfa
+```
+
+### List Profiles
+
+When you want to see what AWS profiles you have on your local machine already
+you can utilize the command `awsctl list` command.
+
+Example listing of profiles --
+
+```sh
+$ awsctl list
++--------------------+--------------------------------------+-----------+
+|     PROFILE        |        MFA DEVICE SERIAL ARN         |  REGION   |
++--------------------+--------------------------------------+-----------+
+| profile cowboy     | arn:aws:iam::123456789012:mfa/cowboy | us-east-1 |
+| profile cowboy_mfa |                                      | us-east-1 |
++--------------------+--------------------------------------+-----------+
 ```
