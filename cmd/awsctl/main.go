@@ -64,14 +64,18 @@ func main() {
 
 	if _, err := os.Stat(credentialsFile); os.IsNotExist(err) {
 		// Ensure the default ~/.aws directory exists.
-		os.MkdirAll(awsDirectory, os.ModePerm)
+		if err = os.MkdirAll(awsDirectory, os.ModePerm); err != nil {
+			logger.Critical("Failed to make directory: %s. Error: %s.", awsDirectory, err)
+		}
 
 		file, err := os.Create(credentialsFile)
 		if err != nil {
 			logger.Critical("Failed to create file: %s. Error: %s.", credentialsFile, err)
 			os.Exit(1)
 		}
-		file.Close()
+		if err = file.Close(); err != nil {
+			logger.Warning("Failed to close credentials file.")
+		}
 	}
 
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
@@ -80,7 +84,9 @@ func main() {
 			logger.Critical("Failed to create file: %s. Error: %s.", configFile, err)
 			os.Exit(1)
 		}
-		file.Close()
+		if err = file.Close(); err != nil {
+			logger.Warning("Failed to close config file.")
+		}
 	}
 
 	app := kingpin.New("awsctl", "CLI tool to help manage multiple AWS profiles with MFA enabled.").
