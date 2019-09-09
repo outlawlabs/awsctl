@@ -1,37 +1,67 @@
-version: 2
+version: 2.1
+
+references:
+  images:
+    go: &GOLANG_IMAGE outlawlabs/go:latest
+
 jobs:
-  build:
-    docker:
-      - image: outlawlabs/go:latest
-    working_directory: ~/app
-    steps:
-      - checkout
-      - run:
-          name: Building binary
-          command: mage build
   vet:
     docker:
-      - image: outlawlabs/go:latest
-    working_directory: ~/app
+      - image: *GOLANG_IMAGE
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - awsctl-modcache-v1-{{ checksum "go.mod" }}
       - run:
-          name: Vet codebase
-          command: mage vet
+          command: go mod download
+      - save_cache:
+          key: awsctl-modcache-v1-{{ checksum "go.mod" }}
+          paths:
+            - /go/pkg/mod
+      - run:
+          name: check go fmt
+          command: |
+            files=$(go fmt ./...)
+            if [ -n "$files" ]; then
+              echo "The following file(s) do not conform to go fmt:"
+              echo "$files"
+              exit 1
+            fi
+      - run:
+          command: go vet ./...
+
   test:
     docker:
-      - image: outlawlabs/go:latest
-    working_directory: ~/app
+      - image: *GOLANG_IMAGE
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - awsctl-modcache-v1-{{ checksum "go.mod" }}
       - run:
-          name: Test codebase
-          command: mage test
+          command: go test ./...
+
+  build:
+    docker:
+      - image: *GOLANG_IMAGE
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - awsctl-modcache-v1-{{ checksum "go.mod" }}
+      - run:
+          command: go build -mod=vendor -tags ci ./cmd/awsctl
 
 workflows:
   version: 2
   build_vet_and_test:
     jobs:
-      - build
       - vet
-      - test
+      - test:
+          requires:
+            - vet
+      - build:
+          requires:
+            - vet
+            - test
