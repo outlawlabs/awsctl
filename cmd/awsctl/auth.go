@@ -42,11 +42,11 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 		return errors.Wrap(err, "failed to read config file")
 	}
 
-	if err := os.Setenv("AWS_SDK_LOAD_CONFIG", "true"); err != nil {
+	if err = os.Setenv("AWS_SDK_LOAD_CONFIG", "true"); err != nil {
 		return errors.Wrap(err, "failed to set AWS_SDK_LOAD_CONFIG value")
 	}
 
-	if err := os.Setenv("AWS_PROFILE", a.profile); err != nil {
+	if err = os.Setenv("AWS_PROFILE", a.profile); err != nil {
 		return errors.Wrap(err, "failed to set AWS_PROFILE value")
 	}
 
@@ -69,7 +69,7 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 
 	mfaProfile := fmt.Sprintf("profile %s_mfa", a.profile)
 	config.Section(mfaProfile).Key(keyRegion).SetValue(region)
-	if err := config.SaveTo(a.configFile); err != nil {
+	if err = config.SaveTo(a.configFile); err != nil {
 		return errors.Wrap(err, "failed to save new config file")
 	}
 
@@ -78,7 +78,7 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 	credentials.Section(mfaProfile).Key(keySecretAccessKey).SetValue(prof.SecretAccessKey)
 	credentials.Section(mfaProfile).Key(keySessionToken).SetValue(prof.SessionToken)
 	credentials.Section(mfaProfile).Key(keyMFASerial).SetValue(prof.MFASerial)
-	if err := credentials.SaveTo(a.credentialsFile); err != nil {
+	if err = credentials.SaveTo(a.credentialsFile); err != nil {
 		return errors.Wrap(err, "failed to save new credentials file")
 	}
 
