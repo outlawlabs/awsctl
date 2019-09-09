@@ -44,7 +44,7 @@ func (r *removeCommand) run(c *kingpin.ParseContext) error {
 
 	// Ignore error -- *should* only come back as not found if the section does
 	// not exist already.
-	if _, err := config.GetSection(configProfile); err != nil {
+	if _, err = config.GetSection(configProfile); err != nil {
 		return errors.New("cannot remove profile, it does not exist")
 	}
 

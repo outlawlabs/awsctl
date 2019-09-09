@@ -160,7 +160,7 @@ func (p Profile) Save(config, credentials *ini.File, configFile, credentialsFile
 	}
 	configSection.Key(keyRegion).SetValue(p.Region)
 	configSection.Key(keyMFASerial).SetValue(p.MFASerial)
-	if err := config.SaveTo(configFile); err != nil {
+	if err = config.SaveTo(configFile); err != nil {
 		return errors.Wrap(err, "failed to save new config file")
 	}
 

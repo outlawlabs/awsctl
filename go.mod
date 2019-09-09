@@ -25,3 +25,5 @@ require (
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/ini.v1 v1.40.0
 )
+
+go 1.13
