@@ -21,18 +21,18 @@ build:
   env:
     - CGO_ENABLED=0
 
-archive:
-  format: binary
+archives:
+  - format: binary
 
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
 
 checksum:
-  name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
 
 changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - "^docs:"
+      - "^test:"
