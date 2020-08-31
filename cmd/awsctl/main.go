@@ -18,11 +18,13 @@ const (
 	credentialsFile     = "~/.aws/credentials"
 	configFile          = "~/.aws/config"
 
-	keyAccessKeyID     = "aws_access_key_id"
-	keySecretAccessKey = "aws_secret_access_key"
-	keySessionToken    = "aws_session_token"
-	keyMFASerial       = "mfa_serial"
-	keyRegion          = "region"
+	keyAccessKeyID              = "aws_access_key_id"
+	keySecretAccessKey          = "aws_secret_access_key"
+	keySessionToken             = "aws_session_token"
+	keyMFASerial                = "mfa_serial"
+	keyRegion                   = "region"
+	keyLastAuthentication       = "last_authentication"
+	keyAuthenticationExpiration = "authentication_expiration"
 
 	awsCLIHelp = "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
 
@@ -92,8 +94,6 @@ func main() {
 	app := kingpin.New("awsctl", "CLI tool to help manage multiple AWS profiles with MFA enabled.").
 		Author("github.com/outlawlabs").
 		Version(fmt.Sprintf(versionTemplate, version, timestamp, commitHash))
-
-	// TODO: add timestamp checks for auth so no need for redundant session creation.
 
 	configureAuthCommand(app, configFile, credentialsFile)
 	configureListCommand(app, configFile, credentialsFile)

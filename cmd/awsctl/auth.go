@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/pkg/errors"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -19,6 +20,34 @@ type authCommand struct {
 	duration        int64
 	configFile      string
 	credentialsFile string
+}
+
+func (a *authCommand) authenticate(credentials, config *ini.File, mfa, region string) error {
+	logger.Info("Attempting to authenticate with credentials for profile: %s.", a.profile)
+	prof, err := aws.Authenticate(a.duration, mfa, a.token)
+	if err != nil {
+		return err
+	}
+
+	mfaProfile := fmt.Sprintf("profile %s_mfa", a.profile)
+	config.Section(mfaProfile).Key(keyRegion).SetValue(region)
+	if err = config.SaveTo(a.configFile); err != nil {
+		return errors.Wrap(err, "failed to save new config file")
+	}
+
+	mfaProfile = fmt.Sprintf("%s_mfa", a.profile)
+	credentials.Section(mfaProfile).Key(keyAccessKeyID).SetValue(prof.AccessKeyID)
+	credentials.Section(mfaProfile).Key(keySecretAccessKey).SetValue(prof.SecretAccessKey)
+	credentials.Section(mfaProfile).Key(keySessionToken).SetValue(prof.SessionToken)
+	credentials.Section(mfaProfile).Key(keyMFASerial).SetValue(prof.MFASerial)
+	credentials.Section(mfaProfile).Key(keyAuthenticationExpiration).SetValue(prof.AuthenticationExpiration)
+	if err = credentials.SaveTo(a.credentialsFile); err != nil {
+		return errors.Wrap(err, "failed to save new credentials file")
+	}
+
+	logger.Success("Successfully created a MFA authenticated session for profile: %s.", a.profile)
+
+	return nil
 }
 
 // run will execute the functionality for the "auth" command.
@@ -61,28 +90,29 @@ func (a *authCommand) run(c *kingpin.ParseContext) error {
 	mfa := config.Section(configProfile).Key(keyMFASerial).String()
 	region := config.Section(configProfile).Key(keyRegion).String()
 
-	logger.Info("Attempting to authenticate with credentials for profile: %s.", a.profile)
-	prof, err := aws.Authenticate(a.duration, mfa, a.token)
-	if err != nil {
-		return err
+	mfaProfile := fmt.Sprintf("%s_mfa", a.profile)
+	if credentials.Section(mfaProfile).HasKey(keyAuthenticationExpiration) {
+		authenticationExpiration := credentials.Section(mfaProfile).Key(keyAuthenticationExpiration).String()
+
+		currentTime := time.Now()
+		parsedAuthenticationExpiration, err := time.Parse(time.RFC3339, authenticationExpiration)
+		if err != nil {
+			return err
+		}
+
+		if currentTime.Before(parsedAuthenticationExpiration) {
+			logger.Info("Your current MFA session has not expired yet for profile: %s.", a.profile)
+		} else {
+			if err = a.authenticate(credentials, config, mfa, region); err != nil {
+				return err
+			}
+		}
+	} else {
+		if err = a.authenticate(credentials, config, mfa, region); err != nil {
+			return err
+		}
 	}
 
-	mfaProfile := fmt.Sprintf("profile %s_mfa", a.profile)
-	config.Section(mfaProfile).Key(keyRegion).SetValue(region)
-	if err = config.SaveTo(a.configFile); err != nil {
-		return errors.Wrap(err, "failed to save new config file")
-	}
-
-	mfaProfile = fmt.Sprintf("%s_mfa", a.profile)
-	credentials.Section(mfaProfile).Key(keyAccessKeyID).SetValue(prof.AccessKeyID)
-	credentials.Section(mfaProfile).Key(keySecretAccessKey).SetValue(prof.SecretAccessKey)
-	credentials.Section(mfaProfile).Key(keySessionToken).SetValue(prof.SessionToken)
-	credentials.Section(mfaProfile).Key(keyMFASerial).SetValue(prof.MFASerial)
-	if err = credentials.SaveTo(a.credentialsFile); err != nil {
-		return errors.Wrap(err, "failed to save new credentials file")
-	}
-
-	logger.Success("Successfully created a MFA authenticated session for profile: %s.", a.profile)
 	logger.Always("Activate your MFA profile: export AWS_PROFILE=%s_mfa", a.profile)
 	return nil
 }

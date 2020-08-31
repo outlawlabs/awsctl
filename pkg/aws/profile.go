@@ -3,6 +3,7 @@ package aws
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -12,22 +13,24 @@ import (
 )
 
 const (
-	keyAccessKeyID     = "aws_access_key_id"
-	keySecretAccessKey = "aws_secret_access_key"
-	keySessionToken    = "aws_session_token"
-	keyMFASerial       = "mfa_serial"
-	keyRegion          = "region"
+	keyAccessKeyID              = "aws_access_key_id"
+	keySecretAccessKey          = "aws_secret_access_key"
+	keySessionToken             = "aws_session_token"
+	keyMFASerial                = "mfa_serial"
+	keyRegion                   = "region"
+	keyAuthenticationExpiration = "authentication_expiration"
 )
 
 // Profile represents a structure that includes authentication fields necessary
 // to authenticate with AWS.
 type Profile struct {
-	Name            string `ini:"-"`
-	AccessKeyID     string `ini:"aws_access_key_id,omitempty"`
-	SecretAccessKey string `ini:"aws_secret_access_key,omitempty"`
-	SessionToken    string `ini:"aws_session_token,omitempty"`
-	MFASerial       string `ini:"mfa_serial,omitempty"`
-	Region          string `ini:"region,omitempty"`
+	Name                     string `ini:"-"`
+	AccessKeyID              string `ini:"aws_access_key_id,omitempty"`
+	SecretAccessKey          string `ini:"aws_secret_access_key,omitempty"`
+	SessionToken             string `ini:"aws_session_token,omitempty"`
+	MFASerial                string `ini:"mfa_serial,omitempty"`
+	Region                   string `ini:"region,omitempty"`
+	AuthenticationExpiration string `ini:"authentication_expiration,omitempty"`
 }
 
 // ReadConfigFile will read the specific filename and parse the file
@@ -77,11 +80,19 @@ func Authenticate(duration int64, serialNumber, token string) (Profile, error) {
 		return Profile{}, errors.Wrap(err, "get session token failed")
 	}
 
+	currentTime := time.Now()
+	addedDuration, err := time.ParseDuration(fmt.Sprintf("%vs", duration))
+	if err != nil {
+		return Profile{}, errors.Wrap(err, "parse duration failed")
+	}
+	authenticationExpiration := currentTime.Add(time.Duration(addedDuration)).Format(time.RFC3339)
+
 	return Profile{
-		AccessKeyID:     *result.Credentials.AccessKeyId,
-		SecretAccessKey: *result.Credentials.SecretAccessKey,
-		SessionToken:    *result.Credentials.SessionToken,
-		MFASerial:       serialNumber,
+		AccessKeyID:              *result.Credentials.AccessKeyId,
+		SecretAccessKey:          *result.Credentials.SecretAccessKey,
+		SessionToken:             *result.Credentials.SessionToken,
+		MFASerial:                serialNumber,
+		AuthenticationExpiration: authenticationExpiration,
 	}, nil
 }
 
@@ -170,6 +181,7 @@ func (p Profile) Save(config, credentials *ini.File, configFile, credentialsFile
 	}
 	credentialsSection.Key(keyAccessKeyID).SetValue(p.AccessKeyID)
 	credentialsSection.Key(keySecretAccessKey).SetValue(p.SecretAccessKey)
+	credentialsSection.Key(keyAuthenticationExpiration).SetValue(p.AuthenticationExpiration)
 	if err := credentials.SaveTo(credentialsFile); err != nil {
 		return errors.Wrap(err, "failed to save new credentials file")
 	}
