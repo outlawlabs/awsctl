@@ -36,3 +36,13 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - tap:
+      owner: outlawlabs
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/outlawlabs/awsctl
+    description: CLI based tool to help manage AWS profiles for accounts enabled with MFA
+    test: |
+      system "#{bin}/awsctl --version"
